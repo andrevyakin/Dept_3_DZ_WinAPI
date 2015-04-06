@@ -12,6 +12,10 @@ HINSTANCE hinst;
 
 RECT desktop;
 int _X, _Y, _W, _H; // координаты окна
+int xPos, yPos;
+bool buben = true;
+
+#define ID_Timer 1001
 
 enum VKey {
 	Q = 81, W = 87, E = 69, R = 82, T = 84, Y = 89, U = 85, I = 73, O = 79, P = 80,
@@ -101,6 +105,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message)
 	{
+
+	case WM_TIMER:
+		//Этот финт ушами чуть не увалил мне видеоадаптер :)
+		
+		if (buben)
+		{
+			buben = false;
+			SetWindowText(hWnd, _T(""));
+		}
+
+		if (!buben)
+		{
+			buben = true;
+			SetWindowText(hWnd, _T("Мерцающий заголовок"));
+		}
+				
+		break;
+
+	case WM_MOUSEMOVE:
+		xPos = LOWORD(lParam);
+		yPos = HIWORD(lParam);
+
+		GetClientRect(hWnd, &rect);
+
+		if (yPos <= rect.bottom/2)
+			SetTimer(hWnd, ID_Timer, 50, NULL);
+		//Не знаю как корректно сделать мерцающий заголовок, поэтому буду делать с помощью таймера
+		else
+		{
+			KillTimer(hWnd, ID_Timer);
+			SetWindowText(hWnd, _T("Мерцающий заголовок"));
+		}
+		break;
 
 	case WM_KEYDOWN:
 	{
